@@ -6,6 +6,28 @@ import FormControl from "@mui/material/FormControl";
 import { Select, SelectChangeEvent } from "@mui/material";
 import { displaySelected, getData } from "../utils/get-data.util";
 import { DataRes } from "../types/res.interface";
+import { Doughnut } from "react-chartjs-2";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+  ArcElement,
+} from "chart.js";
+import { Bar } from "react-chartjs-2";
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  ArcElement,
+  Title,
+  Tooltip,
+  Legend
+);
 
 const style = {
   maxWidth: 350,
@@ -41,6 +63,30 @@ const Display = () => {
     fetchData();
   }, [type]);
 
+  const options = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: "bottom" as const,
+      },
+    },
+  };
+
+  const labels = Object.keys(fetchedValues);
+
+  const data = {
+    labels,
+    datasets: [
+      {
+        label: "Dataset 1",
+        data: Object.values(fetchedValues),
+        backgroundColor: Object.values(fetchedValues).map(
+          (v) => "#" + Math.floor(Math.random() * 16777215).toString(16) + "33"
+        ),
+      },
+    ],
+  };
+
   return (
     <div
       style={{
@@ -68,11 +114,16 @@ const Display = () => {
         </FormControl>
       </Box>
       <Box>
-        {displaySelected(fetchedValues).map(
-          (t: { name: string; id: string }, i: number) => (
-            <div key={i}>{t.name}</div>
-          )
+        {Object.values(fetchedValues).length ? (
+          <>
+            <Bar options={options} data={data} />
+          </>
+        ) : (
+          ""
         )}
+      </Box>
+      <Box>
+        <Doughnut data={data} options={options} />
       </Box>
     </div>
   );
