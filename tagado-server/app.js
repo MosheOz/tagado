@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
 const Type = require("./models");
+const { groupTerms } = require("./grouping.helper");
 
 //Set up default mongoose connection
 const mongoDB =
@@ -50,7 +51,6 @@ app.post("/add-type", async (request, response) => {
 
 app.get("/types", async (request, response) => {
   const types = await Type.find({});
-
   try {
     response.send(types);
   } catch (error) {
@@ -63,7 +63,7 @@ app.get("/values/:id", async (request, response) => {
   const type = await Type.find({ _id: id });
 
   try {
-    response.send(type);
+    response.send(groupTerms(type));
   } catch (error) {
     response.status(500).send(error);
   }
